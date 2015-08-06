@@ -1,4 +1,4 @@
-=== Emoji Settings ===
+=== EM Dashboard ===
 Contributors: Cybr
 Tags: easy, mode, dashboard, theme, menu, metabox, meta, box, layout, admin, superadmin, multisite, users
 Requires at least: 3.8.0
