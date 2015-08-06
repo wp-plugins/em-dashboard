@@ -34,6 +34,7 @@ class EM_Dashboard_Options extends EM_Dashboard_Styles {
 			'easy_mode'			=> 'off',		// Easy mode default setting
 			'force_easy'		=> array( '0' => false, '1' => 'manage_options' ), // Force easy mode true/false, unless capability
 			'force_rescue'		=> false, 		// Used to override the force if user is stuck. Worked best a long time ago in a galaxy far, far away...
+			'update_nag'		=> true, 		// @todo USE THIS. Notifies the users with 'update_plugins' capability that there's an update when EM is on. Transient?
 
 			/**
 			 * @plugin authors,
@@ -52,7 +53,7 @@ class EM_Dashboard_Options extends EM_Dashboard_Styles {
 			//* Allowed top pages
 			'easy_pages'		=> array(
 				'index.php', 								// Dashboard
-				'separator',								// First separator
+				'separator1',								// First separator
 				'edit.php',									// Posts
 				'edit.php?post_type=page', 					// Pages
 				'upload.php',								// Media
@@ -70,11 +71,13 @@ class EM_Dashboard_Options extends EM_Dashboard_Styles {
 			//	'genesis',									// Genesis Settings
 			),
 
-			//* Allowed Sub pages
+			// Allowed Sub pages
+			// @todo use this in favor over easy_sub_pages_del. It's used nowhere now.
 			'easy_sub_pages'	=> array (
 			),
 
 			// Disallowed unregistered pages
+			// @todo use this? This plugin is probably powerful enough already.
 			'easy_pages_del' 	=> array (
 			),
 
@@ -132,32 +135,31 @@ class EM_Dashboard_Options extends EM_Dashboard_Styles {
 			'easy_metabox_del_post' => array (
 				array ('revisionsdiv', array('post', 'page'), 'normal'),		// Revisions
 
-			//	array ('submitdiv', array('post', 'page'), 'side'),			// Save/Publish
+			//	array ('submitdiv', array('post', 'page'), 'side'),				// Save/Publish
 
 				array ('attachment-id3', array('post', 'page'), 'normal'),		// Audio Attachments
 
-				array ('formatdiv', array('post', 'page'), 'side'),			// Post Formats
+				array ('formatdiv', array('post', 'page'), 'side'),				// Post Formats
 
 				array ('tagsdiv-post_tag', array('post', 'page'), 'side'),		// Post Tags
 
-				array ('pageparentdiv', array('post', 'page'), 'side'),		// Page attributes
-			//	array ('postimagediv', '', 'side'),			// Featured image
-				array ('postexcerpt', array('post', 'page'), 'normal'),		// Post Excerpt
+				array ('pageparentdiv', array('post', 'page'), 'side'),			// Page attributes
+			//	array ('postimagediv', '', 'side'),								// Featured image
+				array ('postexcerpt', array('post', 'page'), 'normal'),			// Post Excerpt
 				array ('trackbacksdiv', array('post', 'page'), 'normal'),		// Trackbacks
 				array ('postcustom', array('post', 'page'), 'normal'),			// Custom Post Types
 
 				array ('commentstatusdiv', array('post', 'page'), 'normal'),	// Comments status (discussion)
-				array ('commentsdiv', array('post', 'page'), 'normal'),		// Comments
-			//	array ('slugdiv', array('post', 'page'), 'normal'),			// Page/post slug
-			//	array ('authordiv', '', 'normal'),			// Post Author selection
+				array ('commentsdiv', array('post', 'page'), 'normal'),			// Comments
+				array ('slugdiv', array('post', 'page'), 'normal'),				// Page/post slug
+			//	array ('authordiv', '', 'normal'),								// Post Author selection
 			),
 
 
 			'easy_metabox_del_plugin' => array (
-				array ('genesis_inpost_scripts_box', '', 'normal' ), // Genesis scripts
-				array ('genesis_inpost_layout_box', '', 'normal' ), // Genesis layout
+				array ('genesis_inpost_scripts_box', '', 'normal' ), 			// Genesis scripts (loaded on almost every page)
+				array ('genesis_inpost_layout_box', '', 'normal' ), 			// Genesis layout (loaded on almost every page)
 
-//				array ('google_analytics_dashboard', 'dashboard', 'normal' ), 	// WPMUdev Google Analytics+ Dashboard
 				array ('google_analytics_dashboard', '', 'normal' ), 			// WPMUdev Google Analytics+ Dashboard + Page/Post box
 			),
 		);
@@ -183,7 +185,7 @@ class EM_Dashboard_Options extends EM_Dashboard_Styles {
 		 *      Arguments for EM Dashboard settings.
 		 *
 		 *		Contains some extremely advanced arrays. Which probably shouldn't be used.
-		 *		@todo document this filter. It is quite powerful.
+		 *		@todo sanitize the default options. Make sure the e.g. "easy_sub_pages_del" array contains 3 values, no more, no less.
 		 * }
 		 */
 		$this->options = apply_filters( 'the_em_dashboard_options', wp_parse_args( $options, $this->options ) );

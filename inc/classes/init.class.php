@@ -54,25 +54,76 @@ class EM_Dashboard_Init {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param bool $rescue used if the user is stuck to gain access back again to the dashboard
+	 *
 	 * @return bool easy mode on
 	 */
 	public function easy_mode_on( $easy = array() ) {
+
+		$option = $this->option();
 
 		$user_id = get_current_user_id();
 
 		$easy = get_user_meta( $user_id, 'em_dashboard_easy_mode', true );
 
+		/**
+		 * Get default option.
+		 */
 		if ( empty( $easy ) ) {
-			$option = $this->option();
-			$easy = $option['easy_mode'];
+			$easy = get_site_option( 'em_dashboard_force_easy_capability', $option['easy_mode']);
 		}
 
-		if ( $easy === 'off' ) {
+		/**
+		 * Makes sure the user doesn't get stuck in easy mode
+		 * after turning on Easy Mode in the options page and removing
+		 * the Easy Mode button.
+		 *
+		 * Uses maximum capability of admin as determined by em_dashboard_force_easy_capability
+		 *
+		 * Stuck? Add the following filter to your theme's functions.php
+		 * (or in a mu-plugin).
+		 *
+		 * add_filter( 'em_dashboard_forced_rescue', '__return_true');
+ 		*/
+		$force_default = $option['force_easy'];
+		$capability = get_site_option( 'em_dashboard_force_easy_capability', $force_default[1]);
+		$rescue = $this->rescue();
+		$load_easy = get_site_option( 'em_dashboard_load_easy', $option['load_easy'] );
+
+		if ( $easy === 'off' || ( current_user_can( $capability ) && ( $rescue || !$load_easy ) ) ) {
 			return false;
 		} else {
 			return true;
 		}
 
+	}
+
+	/**
+	 * Adds rescue mode.
+	 *
+	 * @since 1.0.2
+	 *
+	 * @return bool rescue mode
+	 */
+	public function rescue() {
+		/**
+		 * Stuck? Add the following filter to your theme's functions.php
+		 * (or in a mu-plugin).
+		 *
+		 * add_filter( 'em_dashboard_forced_rescue', '__return_true');
+ 		*/
+		$rescue = apply_filters( 'em_dashboard_forced_rescue', '__return_false' );
+		$rescue = is_bool( $rescue ) ? $rescue : false;
+
+		if ( $rescue ) return true;
+
+		$option = $this->option();
+		$rescue_alt = $option['force_rescue'];
+		$rescue_alt = is_bool( $rescue_alt ) ? $rescue_alt : false;
+
+		if ( $rescue_alt ) return true;
+
+		return false;
 	}
 
 	/**
@@ -128,7 +179,7 @@ class EM_Dashboard_Init {
 	 * @param bool $forced
 	 * @param string $capability minimum capability ( default: edit_plugins );
 	 *
-	 * @param bool rescue used if the user is stuck to gain access back again to the dashboard
+	 * @param bool $rescue used if the user is stuck to gain access back again to the dashboard
 	 *
 	 * @return bool forced
 	 */
@@ -140,13 +191,7 @@ class EM_Dashboard_Init {
 		$forced 	= get_site_option( 'em_dashboard_force_easy', $force_default[0]);
 		$capability = get_site_option( 'em_dashboard_force_easy_capability', $force_default[1]);
 
-		/**
-		 * Stuck? Add the following filter to your theme's functions.php
-		 * (or in a mu-plugin).
-		 *
-		 * add_filter( 'em_dashboard_forced_rescue', '__return_true');
- 		*/
-		$rescue = apply_filters( 'em_dashboard_forced_rescue', '__return_false' );
+		$rescue = $this->rescue();
 
 		if ( $rescue ) {
 			return false;
@@ -214,6 +259,11 @@ class EM_Dashboard_Init {
 	 * Initializes the admin option button
 	 *
 	 * @since 1.0.0
+	 *
+	 * @return mixed {
+	 *		bool 	: true if easy mode button is shown.
+	 *		string 	: the button
+ 	 *	}
 	 */
 	public function easy_mode_button() {
 
@@ -223,14 +273,24 @@ class EM_Dashboard_Init {
 		$forced = $this->forced();
 
 		/**
-		 * Shows button if easy mode is loaded
+		 * Stuck? Add the following filter to your theme's functions.php
+		 * (or in a mu-plugin).
+		 *
+		 * add_filter( 'em_dashboard_forced_rescue', '__return_true');
+		*/
+		$force_default = $option['force_easy'];
+		$capability = get_site_option( 'em_dashboard_force_easy_capability', $force_default[1]);
+		$rescue = $this->rescue();
+		$easy_on = $this->easy_mode_on();
+
+		/**
+		 * Shows button if easy mode is loaded or when in rescue mode
 		 * Also, it shows for the minimum capability regardless of forced setting
 		 */
 		if ( $load_easy && !$forced ) {
 
 			$easy_activate = esc_html__( 'Easy mode', 'emdashboard' );
 
-			$easy_on = $this->easy_mode_on();
 			$on_off = $easy_on ? 'on' : 'off';
 			$checked = $easy_on ? ' checked="checked"' : '';
 			$value = $easy_on ? '1' : '0';
@@ -272,6 +332,10 @@ class EM_Dashboard_Init {
 			echo '</a>';
 			echo '</div>'; // has been added to prevent jQeury bugs
 			echo '</li>';
+
+			return true;
+		} else {
+			return false;
 		}
 	}
 

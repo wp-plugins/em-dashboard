@@ -140,7 +140,7 @@ class EM_Dashboard_OptionsPage extends EM_Dashboard_Options {
         );
         add_settings_field (
             'em_dashboard_load_easy', 							// id
-            __('Enable the Easy Mode feature', 'emdashboard'),	// title
+            __('Enable Easy Mode Button', 'emdashboard'),   	// title
             array( $this, 'checkbox'), 							// callback
             'em_dashboard_g_settings',		 	 				// page
             'em_dashboard_general_settings',					// section
@@ -183,7 +183,7 @@ class EM_Dashboard_OptionsPage extends EM_Dashboard_Options {
 				'page'		=> 'em_dashboard_g_settings',
 				'default' 	=> array( 'force_easy', '0'),
 				'labelinfo'	=> __( "Force Easy Mode for everyone except for the set Capability below.", 'emdashboard'),
-				'hoverinfo'	=> __( 'This option also removes the button on the bottom left.', 'emdashboard'),
+				'hoverinfo'	=> __( 'This option also removes the button on the bottom left except for the minimum capability.', 'emdashboard'),
 				'hoverinfosite'	=> '',
 				'hoverinfonetwork' => '',
 				'class'		=> '',
@@ -199,8 +199,8 @@ class EM_Dashboard_OptionsPage extends EM_Dashboard_Options {
 				'name' 		=> 'em_dashboard_force_easy_capability',
 				'page'		=> 'em_dashboard_g_settings',
 				'default' 	=> array( 'force_easy', '1'),
-				'labelinfo'	=> __( "The minimum role that doesn't get Easy Mode forced.", 'emdashboard'),
-				'hoverinfo'	=> __( "Although unlikely, if you get stuck in Easy Mode, please see the plugin page's 'Other Nodes'.", 'emdashboard'),
+				'labelinfo'	=> __( "The minimum role that doesn't get Easy Mode forced and sees the Easy Mode Button at all times regardless of other settings.", 'emdashboard'),
+				'hoverinfo'	=> __( "Although very unlikely, if you get stuck in Easy Mode, please see the plugin page's 'Other Nodes'.", 'emdashboard'),
 				'hoverinfosite'	=> '',
 				'hoverinfonetwork' => '',
 				'class'		=> '',
@@ -249,7 +249,8 @@ class EM_Dashboard_OptionsPage extends EM_Dashboard_Options {
 		 *
 		 * @since 1.0.0
 		 *
-		 * Is the nonce check correct?
+		 * Is the nonce check correct? I wasn't able to forge it. But that doesn't mean someone else could.
+         * Then again, the only thing that fires is an update_site_option (escaped) and a redirect (escaped). GL HF GG.
 		 */
 		if ( $_POST && is_multisite() ) {
 			if ( isset( $_POST['submit'] ) && $_POST['_wpnonce'] === $_REQUEST['_wpnonce'] ) {
@@ -259,7 +260,8 @@ class EM_Dashboard_OptionsPage extends EM_Dashboard_Options {
 					'em_dashboard_load_easy', 'em_dashboard_easy_mode', 'em_dashboard_force_easy', 'em_dashboard_force_easy_capability',	//em_dashboard_g_settings
 				), '');
 
-				// Although duplicate $_POST values are sent, I'm not sure why only a single value is parsed.
+				// Although duplicate $_POST values are sent with the checkboxes, I'm not sure why only a single value is parsed.
+                // We'll see if someone returns with a bug report on odd settings. If so, I'll try to uniqueify the array.
 				foreach( (array)$_POST as $key => $value ) {
 					if ( array_key_exists( $key, $settings ) ) {
 						update_site_option( $key, $value );
@@ -280,18 +282,6 @@ class EM_Dashboard_OptionsPage extends EM_Dashboard_Options {
 			wp_redirect( esc_url_raw($url) );
 			exit();
 		}
-        /* else if ( $_POST && ! is_multisite() ) {
-			/**
-			 * Just redirect. Saving is done by Settings API
-			 *//*
-			$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'general_options';
-
-			$url = add_query_arg( 'page', 'em_dashboard_settings', admin_url( 'options-general.php' ));
-			$url = add_query_arg( 'tab', $active_tab, $url );
-			$url = add_query_arg( 'updated', 'true', $url );
-			wp_redirect( esc_url_raw($url) );
-			exit();
-		}*/
 
         $title = __( 'EM Dashboard Settings', 'emdashboard' );
 

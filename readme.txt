@@ -3,7 +3,7 @@ Contributors: Cybr
 Tags: easy, mode, dashboard, theme, menu, metabox, meta, box, layout, admin, superadmin, multisite, users
 Requires at least: 3.8.0
 Tested up to: 4.3.0
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,6 +55,16 @@ This plugin is fully translatable. If you wish to submit a translation, please c
 
 == Changelog ==
 
+= 1.0.2=
+* Added post/page slug to the not-easy metabox list
+* Made sure the admin can't get stuck in easy mode out by turning off the EM button while in Easy Mode.
+* Minimum Non-Forced Capability now also applies on showing the Easy Mode button or not.
+* Changed "Enable the Easy Mode Feature" option title as it was confusing (Enable Easy Mode Button).
+* Applied rescue mode in showing the EM button for the set capability.
+* Made the Easy Mode default setting change have effect.
+* Added back the seperator beneath "Dashboard" in easy mode.
+* Cleaned up more code.
+
 = 1.0.1 =
 * Fixed the Merriweather font calling
 * Changed default minimum forced mode to Administrator (only has effect on MultiSite)
@@ -77,6 +87,8 @@ When Easy Mode is on, this plugin tries to automatically remove pages and meta b
 If you do find pages that aren't removed, add them to a filter as described below or report them to me in the Plugin Support pages and I'll make sure they will be removed :)
 
 == Filters ==
+
+Got Stuck? Add the following filter to your theme's functions.php (or in a mu-plugin).
 
 ***Turn rescue mode on. Handy when you're stuck in Force Mode.***
 `add_filter( 'em_dashboard_forced_rescue', '__return_true' );`
