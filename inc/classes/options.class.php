@@ -32,8 +32,8 @@ class EM_Dashboard_Options extends EM_Dashboard_Styles {
 			'color_picker'		=> true,		// Show the color picker in wp-admin/profile.php
 			'load_easy'			=> true,		// Set easy mode to be active
 			'easy_mode'			=> 'off',		// Easy mode default setting
-			'force_easy'		=> array( '0' => false, '1' => 'edit_plugins' ), // Force easy mode true/false, unless capability
-			'force_rescue'		=> false, 		// Used to override the force if user is stuck
+			'force_easy'		=> array( '0' => false, '1' => 'manage_options' ), // Force easy mode true/false, unless capability
+			'force_rescue'		=> false, 		// Used to override the force if user is stuck. Worked best a long time ago in a galaxy far, far away...
 
 			/**
 			 * @plugin authors,
@@ -84,6 +84,7 @@ class EM_Dashboard_Options extends EM_Dashboard_Styles {
 
 				array ( 'edit.php', 'edit-tags.php?taxonomy=category' ), 	// Category Tags
 				array ( 'edit.php', 'edit-tags.php?taxonomy=post_tag' ), 	// Post Tags
+				array ( 'index.php', 'update-core.php' ),					// Update core
 
 			//	array ( 'upload.php', 'media-new.php' ),					// Media: new
 
@@ -111,9 +112,8 @@ class EM_Dashboard_Options extends EM_Dashboard_Styles {
 
 				array ('dashboard_quick_press', 'dashboard', 'side'),  		// Quick Press
 				array ('dashboard_recent_drafts', 'dashboard', 'side'),  	// Recent Drafts
-				array ('dashboard_primary', 'dashboard', 'side'),   		// WordPress blog
-				array ('dashboard_secondary', 'dashboard', 'side'),   		// Other WordPress News
-
+				array ('dashboard_primary', 'dashboard', 'side'),   			// WordPress blog
+				array ('dashboard_secondary', 'dashboard', 'side'),   			// Other WordPress News
 				// @todo:
 				// Gravity Forms
 				// Concept
@@ -121,45 +121,44 @@ class EM_Dashboard_Options extends EM_Dashboard_Styles {
 			),
 
 			'easy_metabox_del_link' => array (
-				array ('linkcategorydiv', '', 'normal'),	// Link Categories
-				array ('linktargetdiv', '', 'normal'),		// Link Target
-				array ('linkxfndiv', '', 'normal'),			// Link Relationship
-				array ('linkadvanceddiv', '', 'normal'),	// Link Advanced
+			//	array ('linkcategorydiv', 'link', 'normal'),	// Link Categories
+			//	array ('linktargetdiv', 'link', 'normal'),		// Link Target
+				array ('linkxfndiv', 'link', 'normal'),			// Link Relationship
+				array ('linkadvanceddiv', 'link', 'normal'),	// Link Advanced
 
-				array ('linksubmitdiv', '', 'side'),		// Link Submit
+			//	array ('linksubmitdiv', 'link', 'side'),		// Link Submit
 			),
 
 			'easy_metabox_del_post' => array (
-				array ('revisionsdiv', '', 'normal'),		// Revisions
+				array ('revisionsdiv', array('post', 'page'), 'normal'),		// Revisions
 
-			//	array ('submitdiv', '', 'side'),			// Save/Publish
+			//	array ('submitdiv', array('post', 'page'), 'side'),			// Save/Publish
 
-				array ('attachment-id3', '', 'normal'),		// Audio Attachments
+				array ('attachment-id3', array('post', 'page'), 'normal'),		// Audio Attachments
 
-				array ('formatdiv', '', 'side'),			// Post Formats
+				array ('formatdiv', array('post', 'page'), 'side'),			// Post Formats
 
-				array ('tagsdiv-post_tag', '', 'side'),		// Post Tags
+				array ('tagsdiv-post_tag', array('post', 'page'), 'side'),		// Post Tags
 
-				array ('pageparentdiv', '', 'side'),		// Page attributes
-				array ('postimagediv', '', 'side'),			// Featured image
-				array ('postexcerpt', '', 'normal'),		// Post Excerpt
-				array ('trackbacksdiv', '', 'normal'),		// Trackbacks
-				array ('postcustom', '', 'normal'),			// Custom Post Types
+				array ('pageparentdiv', array('post', 'page'), 'side'),		// Page attributes
+			//	array ('postimagediv', '', 'side'),			// Featured image
+				array ('postexcerpt', array('post', 'page'), 'normal'),		// Post Excerpt
+				array ('trackbacksdiv', array('post', 'page'), 'normal'),		// Trackbacks
+				array ('postcustom', array('post', 'page'), 'normal'),			// Custom Post Types
 
-				array ('commentstatusdiv', '', 'normal'),	// Comments status (discussion)
-				array ('commentsdiv', '', 'normal'),		// Comments
-				array ('slugdiv', '', 'normal'),			// Page/post slug
+				array ('commentstatusdiv', array('post', 'page'), 'normal'),	// Comments status (discussion)
+				array ('commentsdiv', array('post', 'page'), 'normal'),		// Comments
+			//	array ('slugdiv', array('post', 'page'), 'normal'),			// Page/post slug
 			//	array ('authordiv', '', 'normal'),			// Post Author selection
 			),
 
 
 			'easy_metabox_del_plugin' => array (
-				array ('genesis_inpost_scripts_box', '', 'normal', '1' ), // Genesis scripts
-				array ('genesis_inpost_layout_box', '', 'normal', '1' ), // Genesis layout
+				array ('genesis_inpost_scripts_box', '', 'normal' ), // Genesis scripts
+				array ('genesis_inpost_layout_box', '', 'normal' ), // Genesis layout
 
-				array ('google_analytics_dashboard', 'dashboard', 'normal', '1' ), 	// WPMUdev Google Analytics+ Dashboard
-				array ('google_analytics_dashboard', '', 'normal', '1' ), 			// WPMUdev Google Analytics+ Page/Post box
-
+//				array ('google_analytics_dashboard', 'dashboard', 'normal' ), 	// WPMUdev Google Analytics+ Dashboard
+				array ('google_analytics_dashboard', '', 'normal' ), 			// WPMUdev Google Analytics+ Dashboard + Page/Post box
 			),
 		);
 
@@ -173,7 +172,7 @@ class EM_Dashboard_Options extends EM_Dashboard_Styles {
 	 * @param array $options The options
 	 * @return array EM Dashboard options
 	 */
-	public function get_option( $options = array() ) {
+	protected function get_option( $options = array() ) {
 
 		/**
 		 * Filter the EM Dashboard options.

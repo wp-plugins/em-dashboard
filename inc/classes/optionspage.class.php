@@ -16,12 +16,12 @@ class EM_Dashboard_OptionsPage extends EM_Dashboard_Options {
 
         register_activation_hook( __FILE__, array( $this, 'set_options' ) );
 
-    	add_action( 'admin_init' , array( &$this, 'register_fields' ) );
+    	add_action( 'admin_init', array( &$this, 'register_fields' ) );
 
         if (is_multisite()) {
         	add_action('network_admin_menu', array( &$this, 'add_menu_link' ) );
         } else {
-            add_action('admin_menu',         array( &$this, 'add_menu_link' ) );
+            add_action('admin_menu',		 array( &$this, 'add_menu_link' ) );
         }
     }
 
@@ -72,7 +72,7 @@ class EM_Dashboard_OptionsPage extends EM_Dashboard_Options {
 		 */
         add_settings_field (
             'em_dashboard_em_styles', 							// id
-            __('EM Dashboard Styles', 'emdashboard'), 	// title
+            __('EM Dashboard Styles', 'emdashboard'),			// title
             array( $this, 'checkbox'),				 			// callback
             'em_dashboard_g_settings',		 	 				// page
             'em_dashboard_general_settings',				 	// section
@@ -89,7 +89,7 @@ class EM_Dashboard_OptionsPage extends EM_Dashboard_Options {
         );
         add_settings_field (
             'em_dashboard_em_fonts', 						// id
-            __('EM Dashboard Fonts', 'emdashboard'), // title
+            __('EM Dashboard Fonts', 'emdashboard'), 		// title
             array( $this, 'checkbox'),	 					// callback
             'em_dashboard_g_settings',		 	 			// page
             'em_dashboard_general_settings',				// section
@@ -345,10 +345,10 @@ class EM_Dashboard_OptionsPage extends EM_Dashboard_Options {
 	    		<?php
 		            //* @todo add more setting pages
 		    		// display tab content
-		    		//	if( $active_tab == 'display_options' ) {
+		    		//	if( $active_tab == 'general_options' ) {
 		    				do_settings_sections( 'em_dashboard_g_settings' );
 		    		//	} else {
-		    		//		do_settings_sections( 'pmt_tab_2' );
+		    		//		do_settings_sections( 'metabox_settings' );
 		    		//	}
 		    	?>
 				<hr>
@@ -414,7 +414,7 @@ class EM_Dashboard_OptionsPage extends EM_Dashboard_Options {
 
 		?><label>
 			<input type="hidden" name="<?php echo $name; ?>" id="<?php echo $name; ?> hidden" value="0" <?php checked( $the_option ) ?> />
-				<input type="checkbox" name="<?php echo $name; ?>" id="<?php echo $name; ?>" value="1" <?php checked( $the_option ) ?> />
+			<input type="checkbox" name="<?php echo $name; ?>" id="<?php echo $name; ?>" value="1" <?php checked( $the_option ) ?> />
 			<em><?php echo $info; ?></em>
 			<?php
 			if ( !empty( $label_hover ) ) {
@@ -548,8 +548,8 @@ class EM_Dashboard_OptionsPage extends EM_Dashboard_Options {
 		<label for="<?php echo $name ?>"><em><?php echo $info; ?> </em>
 		<?php
 		if ( !empty( $label_hover ) ) {
-			 ?><span style="text-decoration:underline" title="<?php echo $label_hover; ?>">[?]</span><?php
-		 }
+			?><span style="text-decoration:underline" title="<?php echo $label_hover; ?>">[?]</span><?php
+		}
 		?></label><?php
 	}
 

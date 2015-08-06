@@ -23,17 +23,10 @@ class EM_Dashboard_Init {
 		add_action( 'adminmenu', array( $this, 'easy_mode_button' ) );
 
 		add_action( 'admin_menu', array( &$this, 'easy_mode_active_menu' ), 9999 );
-		add_action( 'wp_dashboard_setup', array( &$this, 'easy_mode_active_dashboard' ) );
-		add_action( 'admin_menu', array( &$this, 'easy_mode_active_link' ) );
-		add_action( 'add_meta_boxes', array( &$this, 'easy_mode_active_post' ) );
 
 		// Removal of plugin boxes, should be more elegant? e.g. add extra array field
-		add_action( 'admin_init', array( &$this, 'easy_mode_active_plugin_post' ), 9999 );
-		add_action( 'add_meta_boxes', array( &$this, 'easy_mode_active_plugin_post' ), 9999 );
-		add_action( 'admin_init', array( &$this, 'easy_mode_active_plugin_dashboard' ), 9999 );
-		add_action( 'add_meta_boxes', array( &$this, 'easy_mode_active_plugin_dashboard' ), 9999 );
-		add_action( 'admin_init', array( &$this, 'easy_mode_active_plugin_metabox_advanced' ), 9999 );
-		add_action( 'add_meta_boxes', array( &$this, 'easy_mode_active_plugin_metabox_advanced' ), 9999 );
+		add_action( 'add_meta_boxes', array( &$this, 'easy_mode_active_metabox' ), 9999 ); // This is called later.
+		add_action( 'admin_init', array( &$this, 'easy_mode_active_metabox' ), 9999 );
 
 		add_action( 'plugins_loaded', array( $this, 'easy_mode_switch' ) );
 
@@ -47,7 +40,7 @@ class EM_Dashboard_Init {
 	 *
 	 * @return bool wp version is "compare" to
 	 */
-	protected function wp_version( $version = '4.0.0', $compare = '>=' ) {
+	public function wp_version( $version = '4.0.0', $compare = '>=' ) {
 		global $wp_version;
 
 		if ( version_compare( $wp_version, $version, $compare ) )
@@ -113,8 +106,6 @@ class EM_Dashboard_Init {
 		 *
 		 * I'm not sure how this is affected security wise, the $_GET value
 		 * will be parsed correctly and is sanitized so only accepts on or off.
-		 *
-		 * //	$query = get_query_var( 'easy-mode', false )
 		 */
 		$query = !empty( $_GET["easy-mode"] ) ? $_GET["easy-mode"] : false;
 
@@ -319,7 +310,6 @@ class EM_Dashboard_Init {
 					foreach ($menu as $menukey => $item) {
 						if ( !in_array( $item[2], $easy_pages ) ) {
 							remove_menu_page( $item[2] );
-					//		print_r ( $item[2] ); echo "\r\n";
 						}
 					}
 				}
@@ -343,11 +333,12 @@ class EM_Dashboard_Init {
 
 	/**
 	 * Runs when Easy Mode is active
-	 * Removes menus to ease up the dashboard page
+	 * Removes metaboxes from dashboards, pages, posts and links
+	 * Don't tell me this is slow. See times.
 	 *
-	 * @since 1.0.0
+	 * @since 1.0.1
 	 */
-	public function easy_mode_active_dashboard() {
+	public function easy_mode_active_metabox() {
 
 		$easy_mode = $this->easy_mode_on();
 		$forced = $this->forced();
@@ -360,178 +351,66 @@ class EM_Dashboard_Init {
 			 * Start removal of meta boxes
 			 *
 			 * @since 1.0.0
+			 * (time: 0.0007s)
 			 */
-			$easy_metabox_del = get_site_option( 'em_dashboard_nodes_meta_dashboard', $option['easy_metabox_del_dashboard'] );
+			$em_mb_db = get_site_option( 'em_dashboard_nodes_meta_dashboard', $option['easy_metabox_del_dashboard'] );
+			$em_mb_li = get_site_option( 'em_dashboard_nodes_meta_link', $option['easy_metabox_del_link'] );
+			$em_mb_po = get_site_option( 'em_dashboard_nodes_meta_post', $option['easy_metabox_del_post'] );
+			$em_mb_pl = get_site_option( 'em_dashboard_nodes_meta_plugin', $option['easy_metabox_del_plugin'] );
 
-			foreach ( $easy_metabox_del as $box ) {
-				$id		 = $box[0];
-				$page 	 = $box[1];
-				$context = $box[2];
+		//	var_dump ( $em_mb_db );
 
-				if ( is_array( $page ) ) {
-					if ( $page == 'dashboard') {
-						remove_meta_box( $id, $page, $context );
-					}
-				}
-			}
-		}
-	}
+			// Check if they're arrays, else empty them (time: 0.000006s)
+			$em_mb_db = is_array( $em_mb_db ) ? $em_mb_db : '';
+			$em_mb_li = is_array( $em_mb_li ) ? $em_mb_li : '';
+			$em_mb_po = is_array( $em_mb_po ) ? $em_mb_po : '';
+			$em_mb_pl = is_array( $em_mb_pl ) ? $em_mb_pl : '';
 
-	/**
-	 * Runs when Easy Mode is active
-	 * Removes menus to ease up the link page
-	 *
-	 * @since 1.0.0
-	 */
-	public function easy_mode_active_link() {
+			// Merge them together (time: 0.000009s)
+			$metaboxes = array_merge( $em_mb_db, $em_mb_li, $em_mb_po, $em_mb_pl );
 
-		$easy_mode = $this->easy_mode_on();
-		$forced = $this->forced();
-
-		if ( $easy_mode || $forced ) {
-
-			$option = $this->option();
-
-			/**
-			 * Start removal of meta boxes
-			 *
-			 * @since 1.0.0
-			 */
-			$easy_metabox_del = get_site_option( 'em_dashboard_nodes_meta_link', $option['easy_metabox_del_link'] );
-
-			if ( is_array( $easy_metabox_del ) ) {
-				foreach ( $easy_metabox_del as $box ) {
+			// (time: 0.0009s)
+			// Bulletproof?
+			if ( is_array ( $metaboxes ) ) {
+				foreach ( $metaboxes as $box ) {
 					$id		 = $box[0];
 					$page 	 = $box[1];
 					$context = $box[2];
 
-					remove_meta_box( $id, $page, $context );
-				}
-			}
-		}
-	}
-
-	/**
-	 * Runs when Easy Mode is active
-	 * Removes post meta boxes to ease up the edit pages
-	 *
-	 * @since 1.0.0
-	 */
-	public function easy_mode_active_post() {
-
-		$easy_mode = $this->easy_mode_on();
-		$forced = $this->forced();
-
-		if ( $easy_mode || $forced ) {
-
-			$option = $this->option();
-
-			/**
-			 * Start removal of meta boxes
-			 *
-			 * @since 1.0.0
-			 */
-			$easy_metabox_del = get_site_option( 'em_dashboard_nodes_meta_post', $option['easy_metabox_del_post'] );
-
-			foreach ( $easy_metabox_del as $box ) {
-				$id		 = $box[0];
-				$page 	 = $box[1];
-				$context = $box[2];
-
-				// Debugging
-				/*
-				echo "id: $id \r\n";
-				echo "page: $page \r\n";
-				echo "context: $context \r\n";
-				*/
-
-				if ( empty( $page ) ) {
-					$page = array('page', 'post');
-				}
-
-				if ( is_array( $page ) ) {
-					foreach ( $page as $p ) {
-						remove_meta_box( $id, $p, $context );
+					if ( empty( $page ) ) {
+						$page = array('page', 'post', 'dashboard', 'link', 'attachment');
 					}
-				}
-			}
-		}
-	}
 
-	/**
-	 * Runs when Easy Mode is active
-	 * Removes plugin meta boxes to ease up the post pages
-	 *
-	 * @since 1.0.0
-	 */
-	public function easy_mode_active_plugin_post() {
+					if ( empty ( $context ) ) {
+						$context = array('normal', 'advanced', 'side');
+					}
 
-		$easy_mode = $this->easy_mode_on();
-		$forced = $this->forced();
-
-		if ( $easy_mode || $forced ) {
-
-			$option = $this->option();
-
-			/**
-			 * Start removal of meta boxes
-			 *
-			 * @since 1.0.0
-			 */
-			$easy_metabox_del = get_site_option( 'em_dashboard_nodes_meta_dashboard', $option['easy_metabox_del_plugin'] );
-
-			foreach ( $easy_metabox_del as $box ) {
-				$id		 = $box[0];
-				$page 	 = $box[1];
-				$context = $box[2];
-				$plugin  = $box[3];
-
-				if ( empty( $page ) ) {
-					$page = array('page', 'post');
-				}
-
-				if ( is_array( $page ) ) {
-					foreach ( $page as $p ) {
-						if ( $plugin === '1' && ( $p == 'page' || $p == 'post' ) ) {
-							remove_meta_box( $id, $p, $context );
+					if ( is_array( $page ) ) {
+						foreach ( $page as $p ) {
+							if ( is_array( $context ) ) {
+								foreach ( $context as $c ) {
+									if ( is_string( $id ) && ( $p == 'page' || $p == 'post' || $p == 'dashboard' || $p == 'link' || $p == 'attachment' ) && ( $c == 'normal' || $c == 'advanced' || $c == 'side' ) ) {
+										remove_meta_box( $id, $p, $c );
+									}
+								}
+							} else {
+								if ( is_string( $id ) && ( $p == 'page' || $p == 'post' || $p == 'dashboard' || $p == 'link' || $p == 'attachment' ) && ( $context == 'normal' || $context == 'advanced' || $context == 'side' ) ) {
+									remove_meta_box( $id, $p, $context );
+								}
+							}
 						}
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Runs when Easy Mode is active
-	 * Removes plugin metaboxes to ease up the dashboard
-	 *
-	 * @since 1.0.0
-	 */
-	public function easy_mode_active_plugin_dashboard() {
-
-		$easy_mode = $this->easy_mode_on();
-		$forced = $this->forced();
-
-		if ( $easy_mode || $forced ) {
-
-			$option = $this->option();
-
-			/**
-			 * Start removal of meta boxes
-			 *
-			 * @since 1.0.0
-			 */
-			$easy_metabox_del = get_site_option( 'em_dashboard_nodes_meta_dashboard', $option['easy_metabox_del_plugin'] );
-
-			if ( is_array( $easy_metabox_del ) ) {
-				foreach ( $easy_metabox_del as $box ) {
-					$id		 = $box[0];
-					$page 	 = $box[1];
-					$context = $box[2];
-					$plugin  = $box[3];
-
-					if ( $plugin === '1' && $page == 'dashboard') {
-						remove_meta_box( $id, $page, $context );
+					} else {
+						if ( is_array( $context ) ) {
+							foreach ( $context as $c ) {
+								if ( is_string( $id ) && ( $page == 'page' || $page == 'post' || $page == 'dashboard' || $page == 'link' || $page == 'attachment' ) && ( $c == 'normal' || $c == 'advanced' || $c == 'side' ) ) {
+									remove_meta_box( $id, $page, $c );
+								}
+							}
+						} else {
+							if ( is_string( $id ) && ( $page == 'page' || $page == 'post' || $page == 'dashboard' || $page == 'link' || $page == 'attachment' ) && ( $context == 'normal' || $context == 'advanced' || $context == 'side' ) ) {
+								remove_meta_box( $id, $page, $context );
+							}
+						}
 					}
 				}
 			}
@@ -546,6 +425,7 @@ class EM_Dashboard_Init {
 	 * @requires testing
 	 *
 	 * @since 1.0.0
+	 * @todo check this against allowed meta boxes
 	 */
 	public function easy_mode_active_plugin_metabox_advanced() {
 		$easy_mode = $this->easy_mode_on();
@@ -565,9 +445,9 @@ class EM_Dashboard_Init {
 							foreach ( $array_2 as $priority => $array_3 ) {
 								foreach ( $array_3 as $box) {
 									$id = $box["id"];
-								//	$title = $box["title"];
 								//	$callback = $box["callback"];
-								//	$args = $box["args"];
+									// @todo figure out a way to callback e.g. remove_action('callback')
+									// Makes for more reliable code.
 
 									// Use unset instead of remove_meta_box?
 									// Because of "callback", or use "callback" to remove the action call? <- but could break some WP installations?
@@ -576,12 +456,9 @@ class EM_Dashboard_Init {
 								}
 							}
 						}
-
 					}
 				}
-
 			}
 		}
 	}
-
 }

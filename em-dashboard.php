@@ -3,7 +3,7 @@
  * Plugin Name: EM Dashboard
  * Plugin URI: https://wordpress.org/plugins/em-dashboard/
  * Description: Redesigned wp-admin screen with easy mode activation to go back to basics.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Sybre Waaijer
  * Author URI: https://cyberwire.nl/
  * Text Domain: emdashboard
@@ -17,12 +17,12 @@
 
 /**
  * CDN Cache buster.
- * Not many caching use CDN in dashboard. What a shame.
+ * Not many caching plugins use CDN in dashboard. What a shame.
  *
  * @since 1.0.0
  */
 if ( !defined( 'EM_PLUGIN_VER' ) )
-	define ( 'EM_PLUGIN_VER', '1.0.0' );
+	define ( 'EM_PLUGIN_VER', '1.0.1' );
 
 /**
  * Le plugin map absolute.

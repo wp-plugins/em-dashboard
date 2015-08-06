@@ -74,7 +74,7 @@ class EM_Dashboard_Styles extends EM_Dashboard_Init {
 
 		//* Load default plugable styles
 		// Always load on HMPL
-		if ( ( $em_styles && $em_styles ) || ( defined( 'USE_EM_DASHBOARD_THEME') && USE_EM_DASHBOARD_THEME ) || ( defined( 'IS_HMPL' ) && IS_HMPL ) ) {
+		if ( $em_styles || ( defined( 'USE_EM_DASHBOARD_THEME') && USE_EM_DASHBOARD_THEME ) || ( defined( 'IS_HMPL' ) && IS_HMPL ) ) {
 			wp_register_style( 'em-dashboard', EM_ADMIN_STYLE, array( 'colors' ), EM_PLUGIN_VER, 'all' );
 			wp_enqueue_style( 'em-dashboard' );
 
@@ -84,7 +84,7 @@ class EM_Dashboard_Styles extends EM_Dashboard_Init {
 
 		//* Load default fonts
 		// Always load on HMPL
-		if ( ( $em_styles && !$em_fonts ) || ( defined( 'USE_EM_DASHBOARD_THEME') && USE_EM_DASHBOARD_THEME ) || ( defined( 'IS_HMPL' ) && IS_HMPL ) ) {
+		if ( ( $em_styles && $em_fonts ) || ( defined( 'USE_EM_DASHBOARD_THEME') && USE_EM_DASHBOARD_THEME ) || ( defined( 'IS_HMPL' ) && IS_HMPL ) ) {
 			wp_dequeue_style( 'open-sans' );
 			wp_deregister_style( 'open-sans' );
 
