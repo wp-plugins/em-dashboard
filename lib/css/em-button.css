@@ -1,0 +1,160 @@
+/**
+ * EM Dashboard Easy Mode Button CSS
+ *
+ * Plugin URI: https://wordpress.org/plugins/em-dashboard/
+ * Author: Sybre Waaijer
+ * Author URI: https://cyberwire.nl/
+ */
+
+#easy-mode-ajax, li#easy-mode-reload {
+	display: inline-block;
+	color: #f1f2f3;
+    margin-top: 10px;
+    -webkit-transition: all .1s ease-in-out;
+    transition: all .1s ease-in-out;
+    line-height: 34px;
+    height: 34px;
+	width: 100%;
+}
+
+#easy-activate div:after {
+    content: '\f472';
+    display: block;
+    line-height: 15px;
+    left: -3px;
+    top: -3px;
+    color: #a0a5aa;
+    color: rgba(240,245,250,.6);
+    font: 400 20px/1 dashicons!important;
+    speak: none;
+    margin: 0 auto;
+    padding: 0!important;
+    position: relative;
+    text-align: center;
+    width: 20px;
+    -webkit-transition: all .1s ease-in-out;
+    transition: all .1s ease-in-out;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+#easy-activate div:after {
+	color: #f1f2f3;
+}
+
+#easy-activate,
+#easy-activate div {
+	padding: 0;
+	width: 15px;
+	height: 15px;
+}
+
+#easy-activate {
+    float: left;
+    margin: 10px 8px 10px 11px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+
+.folded #easy-mode-ajax span, .folded #easy-mode-reload span {
+	display: none;
+}
+
+input#easy-switch {
+	max-height: 0;
+	max-width: 0;
+	opacity: 0;
+	display: none;
+}
+
+a#easy-switch-no-js {
+	vertical-align: middle;
+	padding: 0;
+	line-height: 30px;
+}
+
+#easy-switch + span, #easy-switch > span {
+	display: inline-block;
+	position: relative;
+	box-shadow: inset 0 0 0px 1px rgba(241, 242, 243, 1);
+	text-indent: -9001px;
+	height: 15px;
+	width: 30px;
+	border-radius: 15px;
+	vertical-align: middle;
+	margin-left: 16px;
+}
+
+#easy-switch + span:before, #easy-switch > span:before {
+	content: "";
+	position: absolute;
+	display: block;
+	height: 15px;
+	width: 30px;
+	top: 0;
+	left: 0;
+	border-radius: 15px;
+	background: rgba(19, 191, 17, 0);
+	-moz-transition: .25s ease-in-out;
+	-webkit-transition: .25s ease-in-out;
+	transition: .25s ease-in-out;
+}
+
+#easy-switch + span:after, #easy-switch > span:after {
+	content: "";
+	position: absolute;
+	display: block;
+	height: 15px;
+	width: 15px;
+	top: 0;
+	left: 0;
+	border-radius: 15px;
+	background: #fff;
+	box-shadow: 0 0 0 1px rgba(241, 242, 243, 1);
+	-moz-transition: .25s ease-in-out;
+	-webkit-transition: .25s ease-in-out;
+	transition: .25s ease-in-out;
+}
+
+#easy-switch:checked + span:before, #easy-switch.on > span:before,
+#easy-switch:active > span:before,
+#easy-mode-reload:hover #easy-switch > span:before {
+	width: 30px;
+	background: rgba(33, 186, 120, 1)
+}
+
+#easy-switch.on:active > span:before,
+#easy-mode-reload:hover #easy-switch.on > span:before {
+	background: rgba(19, 191, 17, 0);
+}
+
+#easy-switch:checked + span:after,
+#easy-switch.on > span:after,
+#easy-switch:active > span:after,
+#easy-mode-reload:hover #easy-switch > span:after {
+	left: 15px;
+	box-shadow: 0 0 0 1px rgba(33, 186, 120, 1);
+}
+
+#easy-switch.on:active > span:after,
+#easy-mode-reload:hover #easy-switch.on > span:after  {
+	left: 0;
+	box-shadow: 0 0 0 1px rgba(241, 242, 243, 1);
+}
+
+@media only screen and (max-width: 960px) {
+	.auto-fold #easy-mode-ajax span, .auto-fold #easy-mode-reload span {
+		display: none;
+	}
+
+	.auto-fold #easy-mode-ajax, .auto-fold #easy-mode-reload {
+
+	}
+
+}
+
+@media screen and (max-width: 782px) {
+	.auto-fold #easy-mode-ajax span, .auto-fold #easy-mode-reload span {
+		display: inline-block;
+	}
+}
