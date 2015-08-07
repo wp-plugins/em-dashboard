@@ -3,7 +3,7 @@
  * Plugin Name: EM Dashboard
  * Plugin URI: https://wordpress.org/plugins/em-dashboard/
  * Description: Redesigned wp-admin screen with easy mode activation to go back to basics.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: Sybre Waaijer
  * Author URI: https://cyberwire.nl/
  * Text Domain: emdashboard
@@ -22,7 +22,7 @@
  * @since 1.0.0
  */
 if ( !defined( 'EM_PLUGIN_VER' ) )
-	define ( 'EM_PLUGIN_VER', '1.0.1' );
+	define ( 'EM_PLUGIN_VER', '1.0.2' );
 
 /**
  * Le plugin map absolute.

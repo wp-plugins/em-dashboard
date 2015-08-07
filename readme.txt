@@ -55,7 +55,7 @@ This plugin is fully translatable. If you wish to submit a translation, please c
 
 == Changelog ==
 
-= 1.0.2=
+= 1.0.2 =
 * Added post/page slug to the not-easy metabox list
 * Made sure the admin can't get stuck in easy mode out by turning off the EM button while in Easy Mode.
 * Minimum Non-Forced Capability now also applies on showing the Easy Mode button or not.
